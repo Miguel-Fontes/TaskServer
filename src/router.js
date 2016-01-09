@@ -1,4 +1,4 @@
-var log = require('log').log
+var log = require('./log').log
 
 var ROUTER = (function routerBuilder (log) {
   // API Factory

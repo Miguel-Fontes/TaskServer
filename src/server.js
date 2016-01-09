@@ -9,9 +9,9 @@ var http = require('http'),
   hostname = '127.0.0.1',
   port = 8080
 
-var router = require('router').buildRouter()
+var router = require('./router.js').buildRouter()
 
-var log = require('log').log
+ var log = require('./log.js').log
 
 var tasksCtrl = new TaskController()
 
@@ -109,7 +109,6 @@ function TaskController () {
   }
 
   function saveTask (task) {
-    // TA CHEGANO MALLOC
     ctrl.tarefas.push(JSON.parse(task))
     console.log(ctrl.tarefas)
   }
