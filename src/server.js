@@ -53,8 +53,17 @@ function TaskController () {
       'access-control-max-age': 10,
       'Content-Type': 'application/json'
     }
+    // Access-Control-Allow-Origin -> Este header é usado para segurança de transação.
+    //  Ele indica quais domínios poderão receber o retorno desta transação, tentando
+    //  evitar ataques XSS. O correto é que esteja configurado com o domínio permitido
+    //  a Acessar as informações retornadas. O wildcard * significa que qualquer domínio
+    //  poderá ter acesso aos dados.
 
-  // Isso vai pro activate
+  // Access-Control-Allow-Methods -> Significa quais são os métodos HTTP aceitos pelo
+    //  serviço. Qualquer transação que não seja GET ou POST faz uma requisição do tipo
+    //  OPTIONS para checar quais são os métodos permitidos descritos nesse cabeçalho.
+    //  Se não for retornada uma lista de métodos no HEADER da mensagem, a requisição
+    //  é abortada. 
 
   // Atributos
   ctrl.request = request
@@ -71,6 +80,18 @@ function TaskController () {
   ctrl.setTransaction = setTransaction
   ctrl.options = options
 
+  Array.prototype.filterById = function (id) {
+    var newArray
+    newArray = this.filter(function (obj) { if (obj.id != id) return obj })
+    return newArray
+  }
+
+  Array.prototype.getById = function (id) {
+    var newArray
+    newArray = this.filter(function (obj) { if (obj.id == id) return obj })
+    return newArray
+  }
+
   // Funcionalidades
   function setTransaction (req, res) {
     request = req
@@ -79,35 +100,6 @@ function TaskController () {
   }
 
   function activate () {
-    // Access-Control-Allow-Origin -> Este header é usado para segurança de transação.
-    //  Ele indica quais domínios poderão receber o retorno desta transação, tentando
-    //  evitar ataques XSS. O correto é que esteja configurado com o domínio permitido
-    //  a Acessar as informações retornadas. O wildcard * significa que qualquer domínio
-    //  poderá ter acesso aos dados.
-
-    // Access-Control-Allow-Methods -> Significa quais são os métodos HTTP aceitos pelo
-    //  serviço. Qualquer transação que não seja GET ou POST faz uma requisição do tipo
-    //  OPTIONS para checar quais são os métodos permitidos descritos nesse cabeçalho.
-    //  Se não for retornada uma lista de métodos no HEADER da mensagem, a requisição
-    //  é abortada.  
-
-    // Isso aqui tem que ser refatorado. Nem sempre o código de retorno será 200, já é?
-
-    response.writeHead(200, {'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
-
-    Array.prototype.filterById = function (id) {
-      var newArray
-      newArray = this.filter(function (obj) { if (obj.id != id) return obj })
-      return newArray
-    }
-
-    Array.prototype.getById = function (id) {
-      var newArray
-      newArray = this.filter(function (obj) { if (obj.id == id) return obj })
-      return newArray
-    }
-
   }
 
   function readRequest (dataAction) {
@@ -129,9 +121,7 @@ function TaskController () {
     var newTask = JSON.parse(task)
     ctrl.tarefas.push(newTask)
 
-    response.writeHead(201, {'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.writeHead(201, responseHeaders)
     response.write(JSON.stringify(newTask))
     response.end()
   }
@@ -149,9 +139,7 @@ function TaskController () {
     // Busco no vetor a tarefa para garantir a atualizão
     updatedTask = ctrl.tarefas.getById(request.params.id)
 
-    response.writeHead(200, {'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.writeHead(200, responseHeaders)
     response.write(JSON.stringify(updatedTask))
     response.end()
   }
@@ -159,9 +147,7 @@ function TaskController () {
   function remove () {
     log('Remover tarefa ID ', request.params.id)
     ctrl.tarefas = ctrl.tarefas.filterById(request.params.id)
-    response.writeHead(200, {
-      'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.writeHead(200, responseHeaders)
     response.end()
   }
 
@@ -169,9 +155,7 @@ function TaskController () {
     log('Buscando tarefa')
     var task = ctrl.tarefas.getById(request.params.id)
 
-    response.writeHead(200, {'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.writeHead(200, responseHeaders)
     response.write(JSON.stringify(task))
     response.end()
 
@@ -181,9 +165,7 @@ function TaskController () {
     log('Buscando todas as tarefas')
     var json = JSON.stringify(ctrl.tarefas)
 
-    response.writeHead(200, {'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.writeHead(200, responseHeaders)
     response.write(json)
     response.end()
   }
@@ -197,13 +179,6 @@ function TaskController () {
   }
 
   function options () {
-    var responseHeaders = {
-      'access-control-allow-origin': '*',
-      'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'access-control-allow-headers': 'content-type, accept',
-      'access-control-max-age': 10,
-      'Content-Type': 'application/json'
-    }
     response.writeHead(200, responseHeaders)
     response.end()
   }
