@@ -10,16 +10,12 @@ var http = require('http'),
   port = 8080
 
 var router = require('./router').buildRouter()
-
 var log = require('./log').log
-
-var tasksCtrl = require('./taskController') // new TaskController()
+var tasksCtrl = require('./taskController')
 
 var server = http.createServer()
 
 server.on('request', handler)
-
-module.exports = server
 
 function handler (request, response) {
   log('------------------------------------------------------------------------------------------------')
@@ -43,3 +39,4 @@ server.listen(port, hostname, function () {
   console.log('Server running at http://' + hostname + ':' + port)
 })
 
+module.exports = server
