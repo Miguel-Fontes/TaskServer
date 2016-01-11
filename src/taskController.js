@@ -40,18 +40,6 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
     ctrl.setTransaction = setTransaction
     ctrl.options = options
 
-    Array.prototype.filterById = function (id) {
-      var newArray
-      newArray = this.filter(function (obj) { if (obj.id != id) return obj })
-      return newArray
-    }
-
-    Array.prototype.getById = function (id) {
-      var newArray
-      newArray = this.filter(function (obj) { if (obj.id == id) return obj })
-      return newArray
-    }
-
     // Funcionalidades
     function setTransaction (req, res) {
       request = req
@@ -60,8 +48,22 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
     }
 
     function activate () {
+      // Prototypes
+      Array.prototype.filterById = function (id) {
+        var newArray
+        newArray = this.filter(function (obj) { if (obj.id != id) return obj })
+        return newArray
+      }
+
+      Array.prototype.getById = function (id) {
+        var newArray
+        newArray = this.filter(function (obj) { if (obj.id == id) return obj })
+        return newArray
+      }
+
     }
 
+    // Helper function para leitura dos streams de requests
     function readRequest (dataAction) {
       var body = []
       request.on('data', function (chunk) {
@@ -70,6 +72,13 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
         body = Buffer.concat(body).toString()
         dataAction(body)
       })
+    }
+    
+    // Função Helper para escrever os responses
+    function buildResponse (response, status, headers, value) {
+      response.writeHead(status, headers)
+      response.write(JSON.stringify(value) || '')
+      return response
     }
 
     function save () {
@@ -81,9 +90,8 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
       var newTask = JSON.parse(task)
       ctrl.tarefas.push(newTask)
 
-      response.writeHead(201, responseHeaders)
-      response.write(JSON.stringify(newTask))
-      response.end()
+      buildResponse(response, 201, responseHeaders, newTask)
+        .end()
     }
 
     function update () {
@@ -96,19 +104,18 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
       ctrl.tarefas = ctrl.tarefas.filterById(request.params.id)
       ctrl.tarefas.push(updatedTask)
 
-      // Busco no vetor a tarefa para garantir a atualizão
+      // Busco no vetor a tarefa para garantir a atualização
       updatedTask = ctrl.tarefas.getById(request.params.id)
 
-      response.writeHead(200, responseHeaders)
-      response.write(JSON.stringify(updatedTask))
-      response.end()
+      buildResponse(response, 200, responseHeaders, updatedTask)
+        .end()
     }
 
     function remove () {
       log('Remover tarefa ID ', request.params.id)
       ctrl.tarefas = ctrl.tarefas.filterById(request.params.id)
-      response.writeHead(200, responseHeaders)
-      response.end()
+      buildResponse(response, 200, responseHeaders)
+        .end()
     }
 
     function get () {
@@ -118,34 +125,32 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
       // Se encontrei a tarefa, retorno para o cliente
       // Caso contrário, envio um status 404 
       if (task != '') {
-        response.writeHead(200, responseHeaders)
-        response.write(JSON.stringify(task))
+        buildResponse(response, 200, responseHeaders, task)
+          .end()
       } else {
-        response.writeHead(404, responseHeaders)
+        buildResponse(response, 404, responseHeaders)
+          .end()
       }
-      response.end()
     }
 
     function query () {
       log('Buscando todas as tarefas')
       var json = JSON.stringify(ctrl.tarefas)
 
-      response.writeHead(200, responseHeaders)
-      response.write(json)
-      response.end()
+      buildResponse(response, 200, responseHeaders, json)
+        .end()
     }
 
     function forbidden () {
       log('Request inválido')
 
-      response.writeHead(400)
-      response.write('BAD REQUEST')
-      response.end()
+      buildResponse(response, 400, responseHeaders, 'BAD REQUEST')
+        .end()
     }
 
     function options () {
-      response.writeHead(200, responseHeaders)
-      response.end()
+      buildResponse(response, 200, responseHeaders)
+        .end()
     }
   }
 })(log)
