@@ -49,13 +49,6 @@ var ROUTER = (function routerBuilder (log) {
       matched = false
     }
 
-    function parseUrl (url) {
-      // Função com acesso ao request
-      // Função que 'saiba' quais são os parâmetros da URL e quais são os valores dos parâmetros.
-      // Para cada parâmetro da URL, adicionar um atributo no Request.
-
-    }
-
     function validatePattern (urlPattern, request) {
       var urlSplit = '',
         requestUrlSplit = '',
