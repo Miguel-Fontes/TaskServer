@@ -12,7 +12,6 @@ function Task (id, descricao, status) {
 }
 
 describe('Interface and Content Type validation:', () => {
-
   describe('Post requests', () => {
 
     it('to /tasks/:id should returns status code 201(CREATED)', (done) => {
@@ -87,11 +86,9 @@ describe('Interface and Content Type validation:', () => {
     })
 
   })
-
 })
 
 describe('Flow validation:', () => {
-
   it('should create a new task and return it', (done) => {
     var task = new Task(1000, 'Tarefa para testes', false)
     srv
@@ -125,5 +122,4 @@ describe('Flow validation:', () => {
       .delete('/tasks/1000')
       .expect(200, done)
   })
-
 })
