@@ -26,8 +26,6 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
       }
 
     // Atributos
-    ctrl.request = request
-    ctrl.response = response
     ctrl.tarefas = []
 
     // API
