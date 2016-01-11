@@ -11,13 +11,15 @@ var http = require('http'),
 
 var router = require('./router.js').buildRouter()
 
- var log = require('./log.js').log
+var log = require('./log.js').log
 
 var tasksCtrl = new TaskController()
 
 var server = http.createServer()
 
 server.on('request', handler)
+
+module.exports = server
 
 function handler (request, response) {
   log('------------------------------------------------------------------------------------------------')
@@ -30,10 +32,10 @@ function handler (request, response) {
     .when('DELETE', '/tasks/:id', request, tasksCtrl.remove)
     .when('GET', '/tasks/:id', request, tasksCtrl.get)
     .when('GET', '/tasks', request, tasksCtrl.getAll)
+    .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
     .when('GET', '/', request, tasksCtrl.forbidden)
     .end()
 
-  response.end()
   log('------------------------------------------------------------------------------------------------')
 }
 
@@ -43,7 +45,14 @@ server.listen(port, hostname, function () {
 
 // TODO - Extrair esse controller para outro módulo.
 function TaskController () {
-  var ctrl = this, request, response
+  var ctrl = this, request, response,
+    responseHeaders = {
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'access-control-allow-headers': 'content-type, accept',
+      'access-control-max-age': 10,
+      'Content-Type': 'application/json'
+    }
 
   // Isso vai pro activate
 
@@ -60,6 +69,7 @@ function TaskController () {
   ctrl.getAll = query,
   ctrl.forbidden = forbidden
   ctrl.setTransaction = setTransaction
+  ctrl.options = options
 
   // Funcionalidades
   function setTransaction (req, res) {
@@ -82,6 +92,7 @@ function TaskController () {
     //  é abortada.  
 
     // Isso aqui tem que ser refatorado. Nem sempre o código de retorno será 200, já é?
+
     response.writeHead(200, {'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
 
@@ -90,6 +101,13 @@ function TaskController () {
       newArray = this.filter(function (obj) { if (obj.id != id) return obj })
       return newArray
     }
+
+    Array.prototype.getById = function (id) {
+      var newArray
+      newArray = this.filter(function (obj) { if (obj.id == id) return obj })
+      return newArray
+    }
+
   }
 
   function readRequest (dataAction) {
@@ -105,50 +123,89 @@ function TaskController () {
   function save () {
     log('Salvando tarefa')
     readRequest(saveTask)
-    response.write('Salvar tarefa')
   }
 
   function saveTask (task) {
-    ctrl.tarefas.push(JSON.parse(task))
-    console.log(ctrl.tarefas)
+    var newTask = JSON.parse(task)
+    ctrl.tarefas.push(newTask)
+
+    response.writeHead(201, {'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.write(JSON.stringify(newTask))
+    response.end()
   }
 
   function update () {
     log('Update tarefa')
     readRequest(updateTask)
-    response.write('Atualizar tarefa')
   }
 
   function updateTask (task) {
-    // Atualiza tb MALLOC
-    // Para atualizar a tarefa eu vou remover a tarefa 
-    // existente e adicionar a nova versão
     var updatedTask = JSON.parse(task)
     ctrl.tarefas = ctrl.tarefas.filterById(request.params.id)
     ctrl.tarefas.push(updatedTask)
-    console.log(ctrl.tarefas)
+
+    // Busco no vetor a tarefa para garantir a atualizão
+    updatedTask = ctrl.tarefas.getById(request.params.id)
+
+    response.writeHead(200, {'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.write(JSON.stringify(updatedTask))
+    response.end()
   }
 
   function remove () {
     log('Remover tarefa ID ', request.params.id)
     ctrl.tarefas = ctrl.tarefas.filterById(request.params.id)
-    response.write('Remover tarefa')
+    response.writeHead(200, {
+      'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.end()
   }
 
   function get () {
     log('Buscando tarefa')
-    response.write('Buscar tarefa')
+    var task = ctrl.tarefas.getById(request.params.id)
+
+    response.writeHead(200, {'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
+    response.write(JSON.stringify(task))
+    response.end()
+
   }
 
   function query () {
     log('Buscando todas as tarefas')
     var json = JSON.stringify(ctrl.tarefas)
+
+    response.writeHead(200, {'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'DELETE, PUT, GET, POST'})
     response.write(json)
+    response.end()
   }
 
   function forbidden () {
     log('Request inválido')
-    response.write('Request inválido')
+
+    response.writeHead(400)
+    response.write('BAD REQUEST')
+    response.end()
+  }
+
+  function options () {
+    var responseHeaders = {
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'access-control-allow-headers': 'content-type, accept',
+      'access-control-max-age': 10,
+      'Content-Type': 'application/json'
+    }
+    response.writeHead(200, responseHeaders)
+    response.end()
   }
 }
 

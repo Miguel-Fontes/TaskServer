@@ -77,6 +77,7 @@ var ROUTER = (function routerBuilder (log) {
       urlSplit.forEach(buildParams)
 
       log('URL para Matching', parsedUrl)
+      log('request url', requestUrl)
 
       return parsedUrl == requestUrl
 
