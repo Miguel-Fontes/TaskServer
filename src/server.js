@@ -1,10 +1,3 @@
-// Prototypes ----------------------------------------------
-String.prototype.contains = function (char) {
-  var value = this.toString()
-  return value.match(char) != undefined ? true : false
-}
-// ---------------------------------------------------------
-
 var http = require('http'),
   hostname = '127.0.0.1',
   port = 8080

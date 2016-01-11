@@ -1,5 +1,12 @@
 var log = require('./log').log
 
+// Prototypes ----------------------------------------------
+String.prototype.contains = function (char) {
+  var value = this.toString()
+  return value.match(char) != undefined ? true : false
+}
+// ---------------------------------------------------------
+
 var ROUTER = (function routerBuilder (log) {
   // API Factory
   return {
@@ -53,9 +60,9 @@ var ROUTER = (function routerBuilder (log) {
       var urlSplit = '',
         requestUrlSplit = '',
         parsedUrl = request.url,
-        requestUrl = request.url;
-        
-        request.params = {};
+        requestUrl = request.url
+
+      request.params = {}
 
       validateArguments()
 
@@ -83,9 +90,8 @@ var ROUTER = (function routerBuilder (log) {
 
       function buildParams (value, index, array) {
         if (value.contains(':')) {
-          // paramMp[value] = index
           parsedUrl = parsedUrl.replace(value, requestUrlSplit[index])
-          request.params[value.replace(':', '')] = requestUrlSplit[index];
+          request.params[value.replace(':', '')] = requestUrlSplit[index]
         }
       }
 
