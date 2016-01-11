@@ -115,10 +115,15 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
       log('Buscando tarefa')
       var task = ctrl.tarefas.getById(request.params.id)
 
-      response.writeHead(200, responseHeaders)
-      response.write(JSON.stringify(task))
+      // Se encontrei a tarefa, retorno para o cliente
+      // Caso contrário, envio um status 404 
+      if (task != '') {
+        response.writeHead(200, responseHeaders)
+        response.write(JSON.stringify(task))
+      } else {
+        response.writeHead(404, responseHeaders)
+      }
       response.end()
-
     }
 
     function query () {
