@@ -1,6 +1,6 @@
 var log = require('./log').log
+var db = require('./database')
 
-// TODO - Extrair esse controller para outro módulo.
 var TASKCONTROLLER = (function taskCtrlBuilder (log) {
   return new TaskController
 
@@ -24,9 +24,6 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
         'access-control-max-age': 10,
         'Content-Type': 'application/json'
       }
-
-    // Atributos
-    ctrl.tarefas = []
 
     // API
     ctrl.save = save,
@@ -74,14 +71,13 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
 
     // Helper function para escrever os responses
     function buildResponse (response, status, headers, value) {
-     
-     response.writeHead(status, headers)
-     
-     if (value) {
-         value = JSON.stringify(value)
-         response.write(value)
-     }
-     
+      response.writeHead(status, headers)
+
+      if (value) {
+        value = JSON.stringify(value)
+        response.write(value)
+      }
+
       return response
     }
 
@@ -92,8 +88,8 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
 
       // Callback a ser chamado no fim da leitura dos dados do request
       function saveCallback (task) {
-        var newTask = JSON.parse(task)
-        ctrl.tarefas.push(newTask)
+        // var newTask = JSON.parse(task)
+        var newTask = db.save(JSON.parse(task))
 
         buildResponse(response, 201, responseHeaders, newTask)
           .end()
@@ -106,12 +102,9 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
 
       // Callback a ser chamado no fim da leitura dos dados do request
       function updateCallback (task) {
-        var updatedTask = JSON.parse(task)
-        ctrl.tarefas = ctrl.tarefas.filterById(request.params.id)
-        ctrl.tarefas.push(updatedTask)
+        var updatedTask = db.update(JSON.parse(task))
 
         // Busco no vetor a tarefa para garantir a atualização
-        updatedTask = ctrl.tarefas.getById(request.params.id)
 
         buildResponse(response, 200, responseHeaders, updatedTask)
           .end()
@@ -120,15 +113,15 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
 
     function remove () {
       log('Remover tarefa ID ', request.params.id)
-      ctrl.tarefas = ctrl.tarefas.filterById(request.params.id)
+      db.remove(request.params.id)
       buildResponse(response, 200, responseHeaders)
         .end()
     }
 
     function get () {
       log('Buscando tarefa')
-      var task = ctrl.tarefas.getById(request.params.id)
-
+      var task = db.get(request.params.id) 
+      
       // Se encontrei a tarefa, retorno para o cliente
       // Caso contrário, envio um status 404 
       if (task != '') {
@@ -142,7 +135,7 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
 
     function query () {
       log('Buscando todas as tarefas')
-      buildResponse(response, 200, responseHeaders, ctrl.tarefas)
+      buildResponse(response, 200, responseHeaders, db.query())
         .end()
     }
 
@@ -158,6 +151,6 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
         .end()
     }
   }
-})(log)
+})(log, db)
 
 module.exports = TASKCONTROLLER
