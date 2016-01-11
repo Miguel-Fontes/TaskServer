@@ -69,8 +69,8 @@ var ROUTER = (function routerBuilder (log) {
       log('Validação do Pattern', urlPattern, 'com a URL do request', requestUrl)
 
       // TODO: validar se url é string. Caso negativo, retornar erro.
-      urlSplit = urlPattern.split('/').filter(blanks)
-      requestUrlSplit = requestUrl.split('/').filter(blanks)
+      urlSplit = urlPattern.split('/').filter(isBlank)
+      requestUrlSplit = requestUrl.split('/').filter(isBlank)
 
       // Validação do tamanho dos Arrays. Se não for igual significa que a URL não se encaixa no Pattern.
       // Vou retornar ''. Isto fará com que a URL nunca se encaixe no Pattern.
@@ -88,7 +88,7 @@ var ROUTER = (function routerBuilder (log) {
 
       return parsedUrl == requestUrl
 
-      function blanks (value, index, array) {
+      function isBlank (value, index, array) {
         if (value != '') {
           return true
         }
