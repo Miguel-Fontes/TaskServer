@@ -1,4 +1,4 @@
-module.exports = (function taskCtrlBuilder () {
+module.exports = (function taskCtrlFactory () {
   return {
     build: buildController
   }

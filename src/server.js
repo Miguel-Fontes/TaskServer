@@ -2,7 +2,7 @@ var http = require('http'),
   hostname = '127.0.0.1',
   port = 8080
 
-var router = require('./router').buildRouter()
+var router = require('./router').build()
 var log = require('./log').log
 var db = require('./mongodb')
 

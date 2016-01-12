@@ -7,13 +7,13 @@ String.prototype.contains = function (char) {
 }
 // ---------------------------------------------------------
 
-var ROUTER = (function routerBuilder (log) {
+var ROUTER = (function routerFactory (log) {
   // API Factory
   return {
-    buildRouter: buildRouter
+    build: build
   }
 
-  function buildRouter () {
+  function build () {
     return new Router()
   }
 
