@@ -1,15 +1,21 @@
-var MONGODB = (function () {
-  return new Database
+var MONGODB = (function mongoFactory () {
+  return {
+    build: buildMongo
+  }
 
-  function Database () {
+  function buildMongo (config) {
+    return new MongoDB(config)
+  }
+
+  function MongoDB (config) {
     var db = this
 
     var MongoClient = require('mongodb').MongoClient,
       assert = require('assert')
-
+    console.log(config)
     // Connection URL
-    var url = 'mongodb://192.168.99.100:27017/todonode'
-
+    var url = 'mongodb://' + config.host + ':' + (config.port || '27017') + '/' + config.schema
+    console.log(url)
     db.save = save
     db.remove = remove
     db.get = get
@@ -22,6 +28,7 @@ var MONGODB = (function () {
           .insertOne(obj, function (err, r) {
             assert.equal(null, err)
             assert.equal(1, r.insertedCount)
+            delete r.ops[0]._id // Removo o field _id
             callback(r.ops)
             db.close()
           })
@@ -65,25 +72,30 @@ var MONGODB = (function () {
             db.close()
           })
       })
-
     }
 
     function remove (id, callback) {
-      dbExecute(function (db) {
-        db.collection('todo')
-          .deleteOne({id: parseInt(id)}, function (err, r) {
-            assert.equal(null, err)
-            assert.equal(1, r.deletedCount)
-            callback(r.ops)
-            db.close()
-          })
-      })
+      if (id) {
+        dbExecute(function (db) {
+          db.collection('todo')
+            .deleteOne({id: parseInt(id)}, function (err, r) {
+              assert.equal(null, err)
+              assert.equal(1, r.deletedCount)
+              console.log(r.deletedCount)
+              callback([])
+              db.close()
+            })
+        })
+      } else {
+        console.log('id vazio')
+        callback([])
+      }
     }
 
-    function dbExecute (dml) {
+    function dbExecute (callback) {
       MongoClient.connect(url, function (err, db) {
         assert.equal(null, err)
-        dml(db)
+        callback(db)
       })
 
     }

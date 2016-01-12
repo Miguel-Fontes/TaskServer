@@ -19,19 +19,19 @@ function TaskModel (id, descricao, status) {
   }
 
   function save () {
-    log('Salvando tarefa')
+    //log('Salvando tarefa')
   }
 
   function update () {
-    log('Update tarefa')
+    //log('Update tarefa')
   }
 
   function remove () {
-    log('Remove tarefa')
+    //log('Remove tarefa')
   }
 
   function get () {
-    log('Buscando tarefa')
+    //log('Buscando tarefa')
   }
 }
 

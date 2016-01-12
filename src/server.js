@@ -4,8 +4,22 @@ var http = require('http'),
 
 var router = require('./router').build()
 var log = require('./log').log
-//var db = require('./db/mongodb')
-var db = require('./db/memdb')
+
+var db;
+
+var env = 'HMG' // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
+
+switch (env) {
+  case 'DEV':
+    db = require('./db/memdb')
+    break
+  case 'HMG':
+    db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonodehmg'})
+    break
+  case 'PRD':
+    db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonode'})
+    break
+}
 
 var tasksCtrl = require('./taskController').build(log, db)
 

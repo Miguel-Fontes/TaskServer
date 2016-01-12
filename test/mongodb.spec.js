@@ -1,6 +1,8 @@
 describe('MongoDB', () => {
 
   var db = require('../src/db/mongodb.js')
+    .build({host: '192.168.99.100', schema: 'todonodehmg'})
+
   var expect = require('chai').expect
 
   function Task (id, description, done) {
@@ -55,6 +57,7 @@ describe('MongoDB', () => {
     testTask2.done = true
     db
       .update(testTask2, function (data) {
+        // console.log(data)
         expect(data).to.have.length.of(1)
         expect(data[0].done).to.be.equal(testTask2.done)
       })
@@ -72,7 +75,7 @@ describe('MongoDB', () => {
     db
       .remove(555, function (data) {
         expect(data).to.be.instanceOf(Array)
-        expect(data).to.have.length(1)
+        expect(data).to.have.length(0)
       })
 
   })
@@ -88,14 +91,22 @@ describe('MongoDB', () => {
     db
       .remove(556, function (data) {
         expect(data).to.be.instanceOf(Array)
-        expect(data).to.have.length(1)
+        expect(data).to.have.length(0)
       })
   })
-  
-    it('should return an empty array for a get to deleted task 556', () => {
+
+  it('should return an empty array for a get to deleted task 556', () => {
     db.get(testTask2.id, function (data) {
       expect(data).to.be.instanceOf(Array)
       expect(data).to.have.length(0)
     })
+  })
+
+  it('should return 0 tasks', () => {
+    db
+      .query(function (data) {
+          console.log(data)
+        expect(data).to.have.length.of(0)
+      })
   })
 })
