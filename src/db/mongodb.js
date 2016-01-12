@@ -8,11 +8,13 @@ var MONGODB = (function mongoFactory () {
   }
 
   function MongoDB (config) {
+    // Variaveis
     var mdb = this,
       db
-
+    // Requires
     var assert = require('assert')
 
+    // API
     mdb.initialize = initialize
     mdb.save = save
     mdb.remove = remove
@@ -20,6 +22,7 @@ var MONGODB = (function mongoFactory () {
     mdb.query = query
     mdb.update = update
 
+    // Inicialização
     function initialize (callback) {
       var MongoClient = require('mongodb').MongoClient
 
@@ -29,11 +32,12 @@ var MONGODB = (function mongoFactory () {
       // Initialize connection once
       MongoClient.connect(url, function (err, database) {
         if (err) throw err
-
+        db = database
         callback(err, mdb)
       })
     }
 
+    // Funções
     function save (obj, callback) {
       db.collection('todo')
         .insertOne(obj, function (err, r) {

@@ -10,31 +10,21 @@ module.exports = (function () {
 
     var router = require('./router').build()
     var log = require('./log').log
+    var dbInit = require('./db/dbinit')
 
     var db
 
     var server = http.createServer()
 
-    var env = 'PRD' // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
+    var env = 'HMG' // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
 
     srv.initialize = initialize
     srv.server = server
 
     function initialize (callback) {
-      switch (env) {
-        case 'DEV':
-          db = require('./db/memdb')
-          break
-        case 'HMG':
-          db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonodehmg'})
-          break
-        case 'PRD':
-          db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonode'})
-          break
-      }
-
-      db.initialize(function (status) {
-        if (status) {
+      dbInit(env, {host: '192.168.99.100', schema: 'todonodehmg'}, function (err, dbase) {
+        if (!err) {
+          db = dbase
           var tasksCtrl = require('./taskController').build(log, db)
 
           server.on('request', handler)
@@ -64,8 +54,37 @@ module.exports = (function () {
 
           log('------------------------------------------------------------------------------------------------')
         }
-
       })
+
+      /*      switch (env) {
+              case 'DEV':
+                db = require('./db/memdb')
+                break
+              case 'HMG':
+                db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonodehmg'})
+                break
+              case 'PRD':
+                db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonode'})
+                break
+            }*/
+
+    /*      db.initialize(function (status) {
+            if (status) {
+              var tasksCtrl = require('./taskController').build(log, db)
+
+              server.on('request', handler)
+
+              server.listen(port, hostname, function () {
+                console.log('Server running at http://' + hostname + ':' + port)
+              })
+
+              callback(true)
+
+            }
+
+            }
+
+          })*/
     }
   }
 })()
