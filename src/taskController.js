@@ -1,5 +1,5 @@
 var log = require('./log').log
-var db = require('./database')
+var db = require('./mongodb')
 
 var TASKCONTROLLER = (function taskCtrlBuilder (log) {
   return new TaskController
@@ -88,11 +88,10 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
 
       // Callback a ser chamado no fim da leitura dos dados do request
       function saveCallback (task) {
-        // var newTask = JSON.parse(task)
-        var newTask = db.save(JSON.parse(task))
-
-        buildResponse(response, 201, responseHeaders, newTask)
-          .end()
+        var newTask = db.save(JSON.parse(task), function (task) {
+          buildResponse(response, 201, responseHeaders, task)
+            .end()
+        })
       }
     }
 
@@ -102,41 +101,44 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
 
       // Callback a ser chamado no fim da leitura dos dados do request
       function updateCallback (task) {
-        var updatedTask = db.update(JSON.parse(task))
-
-        // Busco no vetor a tarefa para garantir a atualização
-
-        buildResponse(response, 200, responseHeaders, updatedTask)
-          .end()
+        db.update(JSON.parse(task), function (updatedTask) {
+          buildResponse(response, 200, responseHeaders, updatedTask)
+            .end()
+        })
       }
     }
 
     function remove () {
       log('Remover tarefa ID ', request.params.id)
-      db.remove(request.params.id)
-      buildResponse(response, 200, responseHeaders)
-        .end()
+      db.remove(request.params.id, function () {
+        buildResponse(response, 200, responseHeaders)
+          .end()
+      })
+
     }
 
     function get () {
       log('Buscando tarefa')
-      var task = db.get(request.params.id) 
-      
-      // Se encontrei a tarefa, retorno para o cliente
-      // Caso contrário, envio um status 404 
-      if (task != '') {
-        buildResponse(response, 200, responseHeaders, task)
-          .end()
-      } else {
-        buildResponse(response, 404, responseHeaders)
-          .end()
-      }
+      db.get(request.params.id, function (task) {
+        // Se encontrei a tarefa, retorno para o cliente
+        // Caso contrário, envio um status 404
+        if (task != '') {
+          buildResponse(response, 200, responseHeaders, task)
+            .end()
+        } else {
+          buildResponse(response, 404, responseHeaders)
+            .end()
+        }
+      })
     }
 
     function query () {
       log('Buscando todas as tarefas')
-      buildResponse(response, 200, responseHeaders, db.query())
-        .end()
+      db.query(function (data) {
+        buildResponse(response, 200, responseHeaders, data)
+          .end()
+      })
+
     }
 
     function forbidden () {

@@ -1,4 +1,4 @@
-var DATABASE = (function () {
+var MEMDATABASE = (function () {
   return new Database
 
   function Database () {
@@ -52,4 +52,4 @@ var DATABASE = (function () {
   }
 })()
 
-module.exports = DATABASE
+module.exports = MEMDATABASE

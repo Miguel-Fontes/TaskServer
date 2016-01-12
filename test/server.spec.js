@@ -5,10 +5,10 @@ var app = require('../src/server')
 var srv = request(app)
 
 // Helper task model
-function Task (id, descricao, status) {
+function Task (id, description, done) {
   this.id = id
-  this.descricao = descricao
-  this.status = status
+  this.description = description
+  this.done = done
 }
 
 describe('Node Todo Backend Test Suite', function () {
