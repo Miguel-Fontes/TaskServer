@@ -4,7 +4,9 @@ var http = require('http'),
 
 var router = require('./router').buildRouter()
 var log = require('./log').log
-var tasksCtrl = require('./taskController')
+var db = require('./mongodb')
+
+var tasksCtrl = require('./taskController').build(log, db)
 
 var server = http.createServer()
 
@@ -31,6 +33,5 @@ function handler (request, response) {
 server.listen(port, hostname, function () {
   console.log('Server running at http://' + hostname + ':' + port)
 })
-
 
 module.exports = server

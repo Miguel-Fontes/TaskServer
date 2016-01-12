@@ -1,10 +1,13 @@
-var log = require('./log').log
-var db = require('./mongodb')
+module.exports = (function taskCtrlBuilder () {
+  return {
+    build: buildController
+  }
 
-var TASKCONTROLLER = (function taskCtrlBuilder (log, db) {
-  return new TaskController
+  function buildController (log, db) {
+    return new TaskController(log, db)
+  }
 
-  function TaskController () {
+  function TaskController (log, db) {
     var ctrl = this, request, response,
     // Access-Control-Allow-Origin -> Este header é usado para segurança de transação.
     //  Ele indica quais domínios poderão receber o retorno desta transação, tentando
@@ -153,6 +156,6 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log, db) {
         .end()
     }
   }
-})(log, db)
+})()
 
-module.exports = TASKCONTROLLER
+// module.exports = TASKCONTROLLER
