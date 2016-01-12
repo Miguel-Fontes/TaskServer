@@ -20,7 +20,6 @@ module.exports = (function () {
     srv.initialize = initialize
     srv.server = server
 
-
     // Inicialização
     function initialize (callback) {
       dbInit(env, {host: '192.168.99.100', schema: 'todonodehmg'}, function (err, db) {
@@ -31,9 +30,15 @@ module.exports = (function () {
           server.listen(port, hostname, function () {
             console.log('Server running at http://' + hostname + ':' + port)
           })
+
+          server.on('request', handler)
+
           callback(true)
+
+        } else {
+          callback(false)
+          throw new Error('Erro na inicialização do servidor! - ' + err)
         }
-        server.on('request', handler)
       })
 
       // Funções

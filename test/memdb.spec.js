@@ -1,5 +1,5 @@
 describe('MeM Database', function () {
-  var db = require('../src/db/memdb.js')
+  var db = require('../src/db/memdb.js').build({})
   var expect = require('chai').expect
 
   function Task (id, description, done) {
@@ -10,6 +10,12 @@ describe('MeM Database', function () {
 
   var testTask = new Task(555, 'Mem Db Test Task', false)
   var testTask2 = new Task(556, 'Mem Db Test Task 2', false)
+
+  before(function (done) {
+    db.initialize(function (err, dbase) {
+      done()
+    })
+  })
 
   it('should save a Task with id 555', function (done) {
     db

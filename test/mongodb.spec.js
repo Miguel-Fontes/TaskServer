@@ -1,9 +1,11 @@
 describe('MongoDB', function () {
   var expect = require('chai').expect
 
-  var db = require('../src/db/mongodb.js')
+  var mongoDb = require('../src/db/mongodb.js')
     .build({host: '192.168.99.100', schema: 'todonodehmg'})
-
+    
+  var db
+  
   function Task (id, description, done) {
     this.id = id
     this.description = description
@@ -14,8 +16,9 @@ describe('MongoDB', function () {
   var testTask2 = new Task(556, 'Mem Db Test Task 2', false)
 
   it('should connect successfully into the database', function (done) {
-    db.initialize(function (status) {
-      expect(status).to.be.true
+    mongoDb.initialize(function (err, dbase) {
+      expect(err).to.be.null
+      db = dbase
       done()
     })
   })
