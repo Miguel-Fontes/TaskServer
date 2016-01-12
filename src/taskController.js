@@ -88,7 +88,7 @@ var TASKCONTROLLER = (function taskCtrlBuilder (log) {
 
       // Callback a ser chamado no fim da leitura dos dados do request
       function saveCallback (task) {
-        var newTask = db.save(JSON.parse(task), function (task) {
+        db.save(JSON.parse(task), function (task) {
           buildResponse(response, 201, responseHeaders, task)
             .end()
         })

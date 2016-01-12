@@ -19,18 +19,6 @@ describe('Node Todo Backend Test Suite', function () {
 
   describe('Interface and Content Type validation:', () => {
     describe('Post requests', () => {
-
-      it('to /tasks/:id should returns status code 201(CREATED)', (done) => {
-        var task = new Task(999, 'Tarefa para testes', false)
-        srv
-          .post('/tasks')
-          .send(JSON.stringify(task))
-          .expect(201, done)
-      })
-
-    })
-
-    describe('Post requests', () => {
       it('to /tasks/:id should returns status code 201(CREATED)', (done) => {
         var task = new Task(999, 'Tarefa para testes', false)
         srv
@@ -75,7 +63,7 @@ describe('Node Todo Backend Test Suite', function () {
 
     describe('Put requests', () => {
       it('to /tasks/:id should return status code 200(OK)', (done) => {
-        var task = new Task(999, 'Tarefa para testes', false)
+        var task = new Task(999, 'Tarefa atualizada', false)
         srv
           .put('/tasks/999')
           .send(JSON.stringify(task))
@@ -84,13 +72,11 @@ describe('Node Todo Backend Test Suite', function () {
     })
 
     describe('Delete requests', () => {
-
       it('to /tasks/:id should return status code 200(OK)', (done) => {
         srv
           .delete('/tasks/999')
           .expect(200, done)
       })
-
     })
   })
 
