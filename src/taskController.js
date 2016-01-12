@@ -113,8 +113,8 @@ module.exports = (function taskCtrlFactory () {
 
     function remove () {
       log('Remover tarefa ID ', request.params.id)
-      db.remove(request.params.id, function () {
-        buildResponse(response, 200, responseHeaders)
+      db.remove(request.params.id, function (task) {
+        buildResponse(response, 200, responseHeaders, task)
           .end()
       })
 

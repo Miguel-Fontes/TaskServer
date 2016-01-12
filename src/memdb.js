@@ -23,31 +23,32 @@ var MEMDATABASE = (function () {
     db.query = query
     db.update = update
 
-    function save (obj) {
+    function save (obj, callback) {
       data.push(obj)
-      return obj
+      callback(obj)
     }
 
-    function get (id) {
+    function get (id, callback) {
       // Pode ser que não achemos ninguém. E aí?
       var obj = data.getById(id)
-      return obj
+      callback(obj)
     }
 
-    function update (obj) {
+    function update (obj, callback) {
       data = data.filterById(obj.id)
       data.push(obj)
-      return obj
+      callback(obj)
     }
 
-    function query (params) {
-      return data
+    function query (callback) {
+      callback(data)
     }
 
-    function remove (id) {
-      var obj = get(id)
-      if (obj) data = data.filterById(id)
-      return obj
+    function remove (id, callback) {
+      get(id, function (obj) {
+        if (obj) data = data.filterById(id)
+        callback(obj)
+      })
     }
   }
 })()

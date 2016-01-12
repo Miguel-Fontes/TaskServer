@@ -4,7 +4,8 @@ var http = require('http'),
 
 var router = require('./router').build()
 var log = require('./log').log
-var db = require('./mongodb')
+//var db = require('./mongodb')
+var db = require('./memdb')
 
 var tasksCtrl = require('./taskController').build(log, db)
 
