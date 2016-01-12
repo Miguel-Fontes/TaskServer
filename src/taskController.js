@@ -1,7 +1,7 @@
 var log = require('./log').log
 var db = require('./mongodb')
 
-var TASKCONTROLLER = (function taskCtrlBuilder (log) {
+var TASKCONTROLLER = (function taskCtrlBuilder (log, db) {
   return new TaskController
 
   function TaskController () {
