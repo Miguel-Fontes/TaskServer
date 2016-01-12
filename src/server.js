@@ -2,89 +2,59 @@ module.exports = (function () {
   return new Server()
 
   function Server () {
-    var srv = this
-
-    var http = require('http'),
-      hostname = '127.0.0.1',
-      port = 8080
-
+    // Requires
     var router = require('./router').build()
     var log = require('./log').log
     var dbInit = require('./db/dbinit')
+    var tasksCtrl = require('./taskController')
+    var http = require('http')
 
-    var db
-
-    var server = http.createServer()
+    var hostname = '127.0.0.1',
+      port = 8080,
+      srv = this,
+      server = http.createServer()
 
     var env = 'HMG' // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
 
+    // Api
     srv.initialize = initialize
     srv.server = server
 
-    function initialize (callback) {
-      dbInit(env, {host: '192.168.99.100', schema: 'todonodehmg'}, function (err, dbase) {
-        if (!err) {
-          db = dbase
-          var tasksCtrl = require('./taskController').build(log, db)
 
-          server.on('request', handler)
+    // Inicialização
+    function initialize (callback) {
+      dbInit(env, {host: '192.168.99.100', schema: 'todonodehmg'}, function (err, db) {
+        if (!err) {
+          // db = dbase
+          tasksCtrl = tasksCtrl.build(log, db)
 
           server.listen(port, hostname, function () {
             console.log('Server running at http://' + hostname + ':' + port)
           })
-
           callback(true)
-
         }
-
-        function handler (request, response) {
-          log('------------------------------------------------------------------------------------------------')
-          log('Request: METHOD:', request.method, ' - URL:', request.url)
-          tasksCtrl.setTransaction(request, response)
-
-          router
-            .when('POST', '/tasks', request, tasksCtrl.save)
-            .when('PUT', '/tasks/:id', request, tasksCtrl.update)
-            .when('DELETE', '/tasks/:id', request, tasksCtrl.remove)
-            .when('GET', '/tasks/:id', request, tasksCtrl.get)
-            .when('GET', '/tasks', request, tasksCtrl.getAll)
-            .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
-            .when('GET', '/', request, tasksCtrl.forbidden)
-            .end()
-
-          log('------------------------------------------------------------------------------------------------')
-        }
+        server.on('request', handler)
       })
 
-      /*      switch (env) {
-              case 'DEV':
-                db = require('./db/memdb')
-                break
-              case 'HMG':
-                db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonodehmg'})
-                break
-              case 'PRD':
-                db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonode'})
-                break
-            }*/
+      // Funções
+      function handler (request, response) {
+        log('------------------------------------------------------------------------------------------------')
+        log('Request: METHOD:', request.method, ' - URL:', request.url)
+        tasksCtrl.setTransaction(request, response)
 
-    /*      db.initialize(function (status) {
-            if (status) {
-              var tasksCtrl = require('./taskController').build(log, db)
+        router
+          .when('POST', '/tasks', request, tasksCtrl.save)
+          .when('PUT', '/tasks/:id', request, tasksCtrl.update)
+          .when('DELETE', '/tasks/:id', request, tasksCtrl.remove)
+          .when('GET', '/tasks/:id', request, tasksCtrl.get)
+          .when('GET', '/tasks', request, tasksCtrl.getAll)
+          .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
+          .when('GET', '/', request, tasksCtrl.forbidden)
+          .end()
 
-              server.on('request', handler)
+        log('------------------------------------------------------------------------------------------------')
+      }
 
-              server.listen(port, hostname, function () {
-                console.log('Server running at http://' + hostname + ':' + port)
-              })
-
-              callback(true)
-
-            }
-
-            }
-
-          })*/
     }
   }
 })()
