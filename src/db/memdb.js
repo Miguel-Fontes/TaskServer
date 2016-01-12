@@ -1,7 +1,13 @@
 var MEMDATABASE = (function () {
-  return new Database
+  return {
+    build: memDatabaseFactory
+  }
 
-  function Database () {
+  function memDatabaseFactory (config) {
+    return new MeMDatabase(config)
+  }
+
+  function MeMDatabase (config) {
     var db = this,
       data = []
 
@@ -17,22 +23,22 @@ var MEMDATABASE = (function () {
       return newArray
     }
 
-    db.initialize = initialize 
+    db.initialize = initialize
     db.save = save
     db.remove = remove
     db.get = get
     db.query = query
     db.update = update
 
+    function initialize (callback) {
+      callback(null, db)
+    }
+
     function save (obj, callback) {
       data.push(obj)
       get(obj.id, function (data) {
         callback(data)
       })
-    }
-    
-    function initialize(callback) {
-        callback(true)
     }
 
     function get (id, callback) {

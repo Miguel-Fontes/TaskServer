@@ -1,9 +1,6 @@
 var assert = require('assert')
 var request = require('supertest')
-var app = require('../src/server')
-
-var srv = request(app)
-
+var srv, app
 // Helper task model
 function Task (id, description, done) {
   this.id = id
@@ -12,8 +9,16 @@ function Task (id, description, done) {
 }
 
 describe('Node Todo Backend Test Suite', function () {
+  before(function (done) {
+    app = require('../src/server')
+    app.initialize(function (status) {
+      srv = request(app.server)
+      done()
+    })
+  })
+
   after(function (done) {
-    app.close()
+    app.server.close()
     done()
   })
 
@@ -102,8 +107,8 @@ describe('Node Todo Backend Test Suite', function () {
         .send(JSON.stringify(task))
         .expect(200, /my updated task/, done)
     })
-    
-    //TODO: Update a Task to DONE
+
+    // TODO: Update a Task to DONE
 
     it('should return "my updated task" by ID', (done) => {
       srv

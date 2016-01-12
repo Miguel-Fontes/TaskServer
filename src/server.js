@@ -1,52 +1,71 @@
-var http = require('http'),
-  hostname = '127.0.0.1',
-  port = 8080
+module.exports = (function () {
+  return new Server()
 
-var router = require('./router').build()
-var log = require('./log').log
+  function Server () {
+    var srv = this
 
-var db;
+    var http = require('http'),
+      hostname = '127.0.0.1',
+      port = 8080
 
-var env = 'HMG' // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
+    var router = require('./router').build()
+    var log = require('./log').log
 
-switch (env) {
-  case 'DEV':
-    db = require('./db/memdb')
-    break
-  case 'HMG':
-    db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonodehmg'})
-    break
-  case 'PRD':
-    db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonode'})
-    break
-}
+    var db
 
-var tasksCtrl = require('./taskController').build(log, db)
+    var server = http.createServer()
 
-var server = http.createServer()
+    var env = 'PRD' // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
 
-server.on('request', handler)
+    srv.initialize = initialize
+    srv.server = server
 
-function handler (request, response) {
-  log('------------------------------------------------------------------------------------------------')
-  log('Request: METHOD:', request.method, ' - URL:', request.url)
-  tasksCtrl.setTransaction(request, response)
+    function initialize (callback) {
+      switch (env) {
+        case 'DEV':
+          db = require('./db/memdb')
+          break
+        case 'HMG':
+          db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonodehmg'})
+          break
+        case 'PRD':
+          db = require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonode'})
+          break
+      }
 
-  router
-    .when('POST', '/tasks', request, tasksCtrl.save)
-    .when('PUT', '/tasks/:id', request, tasksCtrl.update)
-    .when('DELETE', '/tasks/:id', request, tasksCtrl.remove)
-    .when('GET', '/tasks/:id', request, tasksCtrl.get)
-    .when('GET', '/tasks', request, tasksCtrl.getAll)
-    .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
-    .when('GET', '/', request, tasksCtrl.forbidden)
-    .end()
+      db.initialize(function (status) {
+        if (status) {
+          var tasksCtrl = require('./taskController').build(log, db)
 
-  log('------------------------------------------------------------------------------------------------')
-}
+          server.on('request', handler)
 
-server.listen(port, hostname, function () {
-  console.log('Server running at http://' + hostname + ':' + port)
-})
+          server.listen(port, hostname, function () {
+            console.log('Server running at http://' + hostname + ':' + port)
+          })
 
-module.exports = server
+          callback(true)
+
+        }
+
+        function handler (request, response) {
+          log('------------------------------------------------------------------------------------------------')
+          log('Request: METHOD:', request.method, ' - URL:', request.url)
+          tasksCtrl.setTransaction(request, response)
+
+          router
+            .when('POST', '/tasks', request, tasksCtrl.save)
+            .when('PUT', '/tasks/:id', request, tasksCtrl.update)
+            .when('DELETE', '/tasks/:id', request, tasksCtrl.remove)
+            .when('GET', '/tasks/:id', request, tasksCtrl.get)
+            .when('GET', '/tasks', request, tasksCtrl.getAll)
+            .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
+            .when('GET', '/', request, tasksCtrl.forbidden)
+            .end()
+
+          log('------------------------------------------------------------------------------------------------')
+        }
+
+      })
+    }
+  }
+})()

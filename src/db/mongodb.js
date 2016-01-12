@@ -29,8 +29,8 @@ var MONGODB = (function mongoFactory () {
       // Initialize connection once
       MongoClient.connect(url, function (err, database) {
         if (err) throw err
-        db = database
-        callback(true)
+
+        callback(err, mdb)
       })
     }
 
