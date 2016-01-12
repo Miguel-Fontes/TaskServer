@@ -25,7 +25,9 @@ var MEMDATABASE = (function () {
 
     function save (obj, callback) {
       data.push(obj)
-      callback(obj)
+      get(obj.id, function (data) {
+        callback(data)
+      })
     }
 
     function get (id, callback) {
@@ -37,7 +39,9 @@ var MEMDATABASE = (function () {
     function update (obj, callback) {
       data = data.filterById(obj.id)
       data.push(obj)
-      callback(obj)
+      get(obj.id, function (data) {
+        callback(data)
+      })
     }
 
     function query (callback) {

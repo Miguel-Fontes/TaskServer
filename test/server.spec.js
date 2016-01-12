@@ -102,6 +102,8 @@ describe('Node Todo Backend Test Suite', function () {
         .send(JSON.stringify(task))
         .expect(200, /my updated task/, done)
     })
+    
+    //TODO: Update a Task to DONE
 
     it('should return "my updated task" by ID', (done) => {
       srv
