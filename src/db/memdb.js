@@ -17,6 +17,7 @@ var MEMDATABASE = (function () {
       return newArray
     }
 
+    db.initialize = initialize 
     db.save = save
     db.remove = remove
     db.get = get
@@ -28,6 +29,10 @@ var MEMDATABASE = (function () {
       get(obj.id, function (data) {
         callback(data)
       })
+    }
+    
+    function initialize(callback) {
+        callback(true)
     }
 
     function get (id, callback) {

@@ -8,98 +8,84 @@ var MONGODB = (function mongoFactory () {
   }
 
   function MongoDB (config) {
-    var db = this
+    var mdb = this,
+      db
 
-    var MongoClient = require('mongodb').MongoClient,
-      assert = require('assert')
-    console.log(config)
-    // Connection URL
-    var url = 'mongodb://' + config.host + ':' + (config.port || '27017') + '/' + config.schema
-    console.log(url)
-    db.save = save
-    db.remove = remove
-    db.get = get
-    db.query = query
-    db.update = update
+    var assert = require('assert')
+
+    mdb.initialize = initialize
+    mdb.save = save
+    mdb.remove = remove
+    mdb.get = get
+    mdb.query = query
+    mdb.update = update
+
+    function initialize (callback) {
+      var MongoClient = require('mongodb').MongoClient
+
+      // Connection URL
+      var url = 'mongodb://' + config.host + ':' + (config.port || '27017') + '/' + config.schema
+
+      // Initialize connection once
+      MongoClient.connect(url, function (err, database) {
+        if (err) throw err
+        db = database
+        callback(true)
+      })
+    }
 
     function save (obj, callback) {
-      dbExecute(function (db) {
-        db.collection('todo')
-          .insertOne(obj, function (err, r) {
-            assert.equal(null, err)
-            assert.equal(1, r.insertedCount)
-            delete r.ops[0]._id // Removo o field _id
-            callback(r.ops)
-            db.close()
-          })
-      })
+      db.collection('todo')
+        .insertOne(obj, function (err, r) {
+          assert.equal(null, err)
+          assert.equal(1, r.insertedCount)
+          delete r.ops[0]._id // Removo o field _id
+          callback(r.ops)
+        })
     }
 
     function get (id, callback) {
       // Pode ser que não achemos ninguém. E aí?
       // TODO: Inserir ASSERT de quantidade de registros encontrados
-      dbExecute(function (db) {
-        db.collection('todo')
-          .find({'id': parseInt(id)})
-          .toArray(function (err, r) {
-            callback(r)
-            db.close()
-          })
-      })
+      db.collection('todo')
+        .find({'id': parseInt(id)})
+        .toArray(function (err, r) {
+          callback(r)
+        })
     }
 
     function update (obj, callback) {
-      dbExecute(function (db) {
-        db.collection('todo')
-          .updateOne({'id': parseInt(obj.id)}, {$set: obj}, function (err, r) {
-            assert.equal(null, err)
-            assert.equal(1, r.matchedCount)
-            assert.equal(1, r.modifiedCount)
-            get(obj.id, function (r) {
-              callback(r)
-              db.close()
-            })
+      db.collection('todo')
+        .updateOne({'id': parseInt(obj.id)}, {$set: obj}, function (err, r) {
+          assert.equal(null, err)
+          assert.equal(1, r.matchedCount)
+          assert.equal(1, r.modifiedCount)
+          get(obj.id, function (r) {
+            callback(r)
           })
-      })
+        })
     }
 
     function query (callback) {
-      dbExecute(function (db) {
-        db.collection('todo')
-          .find({}, {_id: 0})
-          .toArray(function (err, docs) {
-            callback(docs)
-            db.close()
-          })
-      })
+      db.collection('todo')
+        .find({}, {_id: 0})
+        .toArray(function (err, docs) {
+          callback(docs)
+        })
     }
 
     function remove (id, callback) {
       if (id) {
-        dbExecute(function (db) {
-          db.collection('todo')
-            .deleteOne({id: parseInt(id)}, function (err, r) {
-              assert.equal(null, err)
-              assert.equal(1, r.deletedCount)
-              console.log(r.deletedCount)
-              callback([])
-              db.close()
-            })
-        })
+        db.collection('todo')
+          .deleteOne({id: parseInt(id)}, function (err, r) {
+            assert.equal(null, err)
+            assert.equal(1, r.deletedCount)
+            callback([])
+          })
       } else {
-        console.log('id vazio')
         callback([])
       }
     }
-
-    function dbExecute (callback) {
-      MongoClient.connect(url, function (err, db) {
-        assert.equal(null, err)
-        callback(db)
-      })
-
-    }
-
   }
 })()
 
