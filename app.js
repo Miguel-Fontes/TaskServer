@@ -1,17 +1,20 @@
 var router = require('./src/router').build()
 var dbInit = require('./src/db/dbinit')
-var tasksCtrlMod = require('./src/taskController')
+var tasksCtrlMod = require('./src/tasks/taskController')
 var config = require('./app.conf')
 var server = require('./src/server').build(config.http)
 
+//
+var tasks = require('./src/tasks/tasks')
+
 // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
-var env
+var env = 'dsv' // Ambiente default é desenvolvimento 
 
 // Vou usar o escopo geral do processo
 var app = this
 
 app.http = []
-app.controllers = []
+app.controllers = [] // SAIR
 app.dbconnections = []
 app.stop = stop
 app.env = env
@@ -21,7 +24,11 @@ function stop () {
 }
 
 // Busto o ambiente dos aggumentos de linha de comando
-env = process.argv[2] ? process.argv[2] : 'dsv'
+process.argv.forEach(function(value, index, array) {
+   if (value == 'dsv' || value == 'hmg' ||  value == 'prd') {
+       env = value
+   }
+})
 
 // Inicializo o banco de dados antes
 dbInit(env, config, function (err, db) {
@@ -30,9 +37,9 @@ dbInit(env, config, function (err, db) {
     app.dbconnections.push(db)
 
     // Construo o controlador de tarefas passando o DB
-    var tasksCtrl = tasksCtrlMod.build(db)
+    var tasksCtrl = tasksCtrlMod.build(db) // SAIR
     //  e salvo no collection
-    app.controllers.push(tasksCtrl)
+    app.controllers.push(tasksCtrl) // SAIR
 
     // Adiciono o server ao collection http
     app.http.push(server)
@@ -47,3 +54,10 @@ dbInit(env, config, function (err, db) {
     throw new Error('Erro na inicialização do banco de dados! - ' + err)
   }
 })
+
+
+function routes(request, response) {
+    router
+    .all('/tasks', request, response, tasks.routes)
+    .end()
+}
