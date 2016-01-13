@@ -154,8 +154,6 @@ describe('App main module', function () {
         .expect(200, /my updated task/, done)
     })
 
-    // TODO: Update a Task to DONE
-
     it('should return "my updated task" by ID', (done) => {
       srv
         .get('/tasks/1000')
