@@ -7,7 +7,7 @@ module.exports = {
 
   // Os ambientes disponíveis.
   // Para criar um novo ambiente, adicionar no objeto as configurações necessárias
-  
+
   env: {
     // db: indica qual o DB do ambiente
     dsv: {
@@ -28,6 +28,9 @@ module.exports = {
   // testes e produção definir com as keys db, hmg e prd
   db: {
     mongodb: {
+      
+      dbClassName: 'MongoDB',
+      
       dsv: {
         host: '192.168.99.100',
         port: '27017',
@@ -44,7 +47,11 @@ module.exports = {
         host: '192.168.99.100',
         port: '27017',
         schema: 'todonode'
-      }
+      },
+    },
+
+    memdb: {
+      dbClassName: 'MeMDatabase'
     }
   }
 }
