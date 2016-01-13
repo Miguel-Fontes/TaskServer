@@ -20,7 +20,6 @@ module.exports = (function () {
 
     process.argv.forEach(function (val, index, array) {
       if (val.hasOwnProperty('env')) {
-        console.log(val.env)
         env = val.env
       }
     })
@@ -33,7 +32,6 @@ module.exports = (function () {
     function initialize (callback) {
       dbInit(env, config, function (err, db) {
         if (!err) {
-          // db = dbase
           tasksCtrl = tasksCtrl.build(log, db)
 
           server.listen(port, hostname, function () {
