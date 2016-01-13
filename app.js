@@ -20,8 +20,8 @@ function stop () {
   server.stop()
 }
 
-
-env = process.argv[2] || 'dsv'
+// Busto o ambiente dos aggumentos de linha de comando
+env = process.argv[2] ? process.argv[2] : 'dsv'
 
 // Inicializo o banco de dados antes
 dbInit(env, config, function (err, db) {
