@@ -1,10 +1,10 @@
 describe('DB configuration Module', () => {
   var dbinit = require('../src/db/dbinit')
   var expect = require('chai').expect
+  var config = require('../app.conf.js')
 
-  it('should create and return a MeM instance to DSV', function (done) {
-    var env = 'DSV',
-      config = {}
+  it('should create and return the configured DB instance to DSV', function (done) {
+    var env = 'dsv'
 
     dbinit(env, config, function (err, db) {
       expect(err).to.be.null
@@ -18,9 +18,8 @@ describe('DB configuration Module', () => {
       done()
     })
   })
-  it('should create and return a MongoDB instance to HMG', function (done) {
-    var env = 'HMG',
-      config = {host: '192.168.99.100', schema: 'todonodehmg'}
+  it('should create and return the configured DB instance to HMG', function (done) {
+    var env = 'hmg'
 
     dbinit(env, config, function (err, db) {
       expect(err).to.be.null
@@ -35,9 +34,8 @@ describe('DB configuration Module', () => {
     })
   })
 
-  it('should create and return a MongoDB instance to PRD', function (done) {
-    var env = 'PRD',
-      config = {host: '192.168.99.100', schema: 'todonodeprd'}
+  it('should create and return the configured DB instance to PRD', function (done) {
+    var env = 'prd'
 
     dbinit(env, config, function (err, db) {
       expect(err).to.be.null
