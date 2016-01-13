@@ -11,6 +11,8 @@ function Task (id, description, done) {
 describe('Node Todo Backend Test Suite', function () {
   before(function (done) {
     app = require('../src/server')
+    .build(require('../app.conf').http)
+    
     app.initialize(function (status) {
       srv = request(app.server)
       done()
