@@ -19,7 +19,6 @@ app.env = env
 function stop () {
   server.stop()
 }
-console.log(process.argv)
 
 /*process.argv.forEach(function (val, index, array) {
   if (val.hasOwnProperty('env')) {
@@ -27,8 +26,7 @@ console.log(process.argv)
   }
 })*/
 
-env = process.argv[2]
-console.log(env)
+env = process.argv[2] || 'dsv'
 
 // Inicializo o banco de dados antes
 dbInit(env, config, function (err, db) {
