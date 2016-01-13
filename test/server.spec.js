@@ -10,13 +10,6 @@ describe('Http server', function () {
   server = require('../src/server')
     .build(config.http)
 
-  /**/
-
-  /*before(function (done) {
-    
-      done()
-  })
-*/
   after(function (done) {
     server.stop()
     done()
