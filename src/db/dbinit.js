@@ -4,17 +4,30 @@ module.exports = function dbInit (env, config, callback) {
   var db
 
   switch (env) {
-    case 'DSV':
-      db = memInstanceFactory(config, callback)
+    case 'dsv':
+      dbSelector()
       break
-    case 'HMG':
-      db = mongoInstanceFactory(config, callback)
-      // require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonodehmg'})
+    case 'hmg':
+      dbSelector()
       break
-    case 'PRD':
-      db = mongoInstanceFactory(config, callback)
-      // require('./db/mongodb').build({host: '192.168.99.100', schema: 'todonode'})
+    case 'prd':
+      dbSelector()
       break
+  }
+
+  function dbSelector () {
+    if (config.env[env].db == 'mem') {
+      db = memInstanceFactory(config.db.mem || { }, callback)
+    } else {
+      db = mongoInstanceFactory(config.db.mongo[env] || { }, callback)
+    }
+  }
+
+  function genericDbFactory(dbModule, config, callback) {
+      var gDb = require ('./' + dbModule)
+      .build(config)
+      
+      gDb(callback)
   }
 
   function mongoInstanceFactory (config, callback) {

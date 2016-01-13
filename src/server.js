@@ -8,13 +8,14 @@ module.exports = (function () {
     var dbInit = require('./db/dbinit')
     var tasksCtrl = require('./taskController')
     var http = require('http')
+    var config = require('../app.conf.js');
 
-    var hostname = '127.0.0.1',
-      port = 8080,
+    var hostname = config.http.hostname,
+      port = config.http.port,
       srv = this,
       server = http.createServer()
 
-    var env = 'HMG' // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
+    var env = 'hmg' // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
 
     // Api
     srv.initialize = initialize
@@ -22,7 +23,7 @@ module.exports = (function () {
 
     // Inicialização
     function initialize (callback) {
-      dbInit(env, {host: '192.168.99.100', schema: 'todonodehmg'}, function (err, db) {
+      dbInit(env, config/*, {host: '192.168.99.100', schema: 'todonodehmg'}*/, function (err, db) {
         if (!err) {
           // db = dbase
           tasksCtrl = tasksCtrl.build(log, db)
