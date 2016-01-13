@@ -1,73 +1,64 @@
 module.exports = (function () {
-  return new Server()
+  return {
+    build: buildServer
+  }
 
-  function Server () {
+  function buildServer (config, ctrl) {
+    return new Server(config, ctrl)
+  }
+
+  function Server (config, ctrl) {
     // Requires
     var router = require('./router').build()
-    var log = require('./log').log
-    var dbInit = require('./db/dbinit')
-    var tasksCtrl = require('./taskController')
     var http = require('http')
-    var config = require('../app.conf.js')
+    var log = require('./log').log
 
-    var hostname = config.http.hostname,
-      port = config.http.port,
+    var tasksCtrl = ctrl
+
+    var hostname = config.hostname,
+      port = config.port,
       srv = this,
       server = http.createServer()
-
-    // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
-    var env = 'dsv'
-
-    process.argv.forEach(function (val, index, array) {
-      if (val.hasOwnProperty('env')) {
-        env = val.env
-      }
-    })
 
     // Api
     srv.initialize = initialize
     srv.server = server
+    srv.stop = stop
 
     // Inicialização
-    function initialize (callback) {
-      dbInit(env, config, function (err, db) {
-        if (!err) {
-          tasksCtrl = tasksCtrl.build(log, db)
-
-          server.listen(port, hostname, function () {
-            // PASSAR PARA FUNÇAO DE LOG 
-            // console.log('Server running at http://' + hostname + ':' + port)
-          })
-
-          server.on('request', handler)
-
-          callback(true)
-
-        } else {
-          callback(false)
-          throw new Error('Erro na inicialização do servidor! - ' + err)
-        }
+    function initialize (ctrl, callback) {
+      server.listen(port, hostname, function () {
+        // PASSAR PARA FUNÇAO DE LOG 
+        // console.log('Server running at http://' + hostname + ':' + port)
       })
 
-      // Funções
-      function handler (request, response) {
-        log('------------------------------------------------------------------------------------------------')
-        log('Request: METHOD:', request.method, ' - URL:', request.url)
-        tasksCtrl.setTransaction(request, response)
+      server.on('request', handler)
 
-        router
-          .when('POST', '/tasks', request, tasksCtrl.save)
-          .when('PUT', '/tasks/:id', request, tasksCtrl.update)
-          .when('DELETE', '/tasks/:id', request, tasksCtrl.remove)
-          .when('GET', '/tasks/:id', request, tasksCtrl.get)
-          .when('GET', '/tasks', request, tasksCtrl.getAll)
-          .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
-          .when('GET', '/', request, tasksCtrl.forbidden)
-          .end()
-
-        log('------------------------------------------------------------------------------------------------')
-      }
-
+      callback(null, srv)
     }
+
+    // Funções
+    function stop () {
+      server.close()
+    }
+
+    function handler (request, response) {
+      log('------------------------------------------------------------------------------------------------')
+      log('Request: METHOD:', request.method, ' - URL:', request.url)
+      tasksCtrl.setTransaction(request, response)
+
+      router
+        .when('POST', '/tasks', request, tasksCtrl.save)
+        .when('PUT', '/tasks/:id', request, tasksCtrl.update)
+        .when('DELETE', '/tasks/:id', request, tasksCtrl.remove)
+        .when('GET', '/tasks/:id', request, tasksCtrl.get)
+        .when('GET', '/tasks', request, tasksCtrl.getAll)
+        .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
+        .when('GET', '/', request, tasksCtrl.forbidden)
+        .end()
+
+      log('------------------------------------------------------------------------------------------------')
+    }
+
   }
 })()
