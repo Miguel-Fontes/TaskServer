@@ -28,9 +28,8 @@ module.exports = {
   // testes e produção definir com as keys db, hmg e prd
   db: {
     mongodb: {
-      
       dbClassName: 'MongoDB',
-      
+
       dsv: {
         host: '192.168.99.100',
         port: '27017',
@@ -52,6 +51,11 @@ module.exports = {
 
     memdb: {
       dbClassName: 'MeMDatabase'
+    },
+
+    fsdb: {
+      dbClassName: 'FSDatabase'
     }
+
   }
 }

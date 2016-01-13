@@ -140,7 +140,7 @@ describe('App main module', function () {
         .expect(201, /Tarefa para testes/, done)
     })
 
-    it('i request the newly created task via get', (done) => {
+    it('request the newly created task via get', (done) => {
       srv
         .get('/tasks/1000')
         .expect(200, /Tarefa para testes/, done)
