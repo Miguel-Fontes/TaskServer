@@ -8,7 +8,7 @@ module.exports = (function taskCtrlFactory () {
   }
 
   function TaskController (db) {
-    var log = require('./log').log
+    var log = require('../log').log
     var ctrl = this, request, response,
     // Access-Control-Allow-Origin -> Este header é usado para segurança de transação.
     //  Ele indica quais domínios poderão receber o retorno desta transação, tentando
@@ -34,7 +34,7 @@ module.exports = (function taskCtrlFactory () {
     ctrl.update = update,
     ctrl.remove = remove,
     ctrl.get = get,
-    ctrl.getAll = query,
+    ctrl.query = query,
     ctrl.forbidden = forbidden
     ctrl.setTransaction = setTransaction
     ctrl.options = options
