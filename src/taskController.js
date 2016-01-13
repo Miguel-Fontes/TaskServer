@@ -3,11 +3,12 @@ module.exports = (function taskCtrlFactory () {
     build: buildController
   }
 
-  function buildController (log, db) {
-    return new TaskController(log, db)
+  function buildController (db) {
+    return new TaskController(db)
   }
 
-  function TaskController (log, db) {
+  function TaskController (db) {
+    var log = require('./log').log
     var ctrl = this, request, response,
     // Access-Control-Allow-Origin -> Este header é usado para segurança de transação.
     //  Ele indica quais domínios poderão receber o retorno desta transação, tentando
