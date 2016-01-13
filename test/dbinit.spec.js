@@ -3,49 +3,37 @@ describe('DB configuration Module', () => {
   var expect = require('chai').expect
   var config = require('../app.conf.js')
 
-  it('should create and return the configured DB instance to DSV', function (done) {
-    var env = 'dsv'
-
+  it('should create and return the configured DB instance to DSV (' + config.env.dsv.db.toUpperCase() + ')', function (done) {
+    var env = 'dsv',
+    envdb = config.env[env].db
+    
     dbinit(env, config, function (err, db) {
       expect(err).to.be.null
       expect(db).not.to.be.undefined
-      expect(db.constructor.toString()).to.contain('MeMDatabase')
-      expect(db.initialize).to.be.defined
-      expect(db.save).to.be.defined
-      expect(db.remove).to.be.defined
-      expect(db.get).to.be.defined
-      expect(db.update).to.be.defined
+      expect(db.constructor.toString()).to.contain(config.db[envdb].dbClassName)
       done()
     })
   })
-  it('should create and return the configured DB instance to HMG', function (done) {
-    var env = 'hmg'
+  it('should create and return the configured DB instance to HMG (' + config.env.hmg.db.toUpperCase() + ')', function (done) {
+    var env = 'hmg',
+    envdb = config.env[env].db
 
     dbinit(env, config, function (err, db) {
       expect(err).to.be.null
       expect(db).not.to.be.undefined
-      expect(db.constructor.toString()).to.contain('MongoDB')
-      expect(db.initialize).to.be.defined
-      expect(db.save).to.be.defined
-      expect(db.remove).to.be.defined
-      expect(db.get).to.be.defined
-      expect(db.update).to.be.defined
+      expect(db.constructor.toString()).to.contain(config.db[envdb].dbClassName)
       done()
     })
   })
 
-  it('should create and return the configured DB instance to PRD', function (done) {
-    var env = 'prd'
+  it('should create and return the configured DB instance to PRD (' + config.env.prd.db.toUpperCase() + ')', function (done) {
+    var env = 'prd',
+    envdb = config.env[env].db
 
     dbinit(env, config, function (err, db) {
       expect(err).to.be.null
       expect(db).not.to.be.undefined
-      expect(db.constructor.toString()).to.contain('MongoDB')
-      expect(db.initialize).to.be.defined
-      expect(db.save).to.be.defined
-      expect(db.remove).to.be.defined
-      expect(db.get).to.be.defined
-      expect(db.update).to.be.defined
+      expect(db.constructor.toString()).to.contain(config.db[envdb].dbClassName)
       done()
     })
   })
