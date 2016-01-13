@@ -3,21 +3,18 @@ module.exports = (function () {
     build: buildServer
   }
 
-  function buildServer (config) {
-    return new Server(config)
+  function buildServer (config, routes) {
+    return new Server(config, routes)
   }
 
-  function Server (config) {
+  function Server (config, routes) {
     // Requires
-    var router = require('./router').build()
     var http = require('http')
     var log = require('./log').log
 
-    var tasksCtrl
-
     var hostname = config.hostname,
       port = config.port,
-      server = http.createServer(handler)
+      server = http.createServer(routes)
 
     var srv = this
 
@@ -25,11 +22,10 @@ module.exports = (function () {
     srv.initialize = initialize
     srv.getHttp = getHttp
     srv.stop = stop
+    srv.routes = routes
 
     // Inicialização
-    function initialize (ctrl, callback) {
-      tasksCtrl = ctrl
-
+    function initialize (callback) {
       server.on('error', function (e) {
         log('Erro!', e)
       })
@@ -37,6 +33,7 @@ module.exports = (function () {
       server.on('close', function () {
         log(' Stopping server')
       })
+      // TODO: Verificar se é útil
       /*   
          process.on('SIGINT', function () {
               server.close()
@@ -55,23 +52,6 @@ module.exports = (function () {
 
     function stop () {
       server.close()
-    }
-
-    function handler (request, response) {
-      log('------------------------------------------------------------------------------------------------')
-      log('Request: METHOD:', request.method, ' - URL:', request.url)
-      tasksCtrl.setTransaction(request, response)
-
-      router
-        .when('POST', '/tasks', request, tasksCtrl.save)
-        .when('PUT', '/tasks/:id', request, tasksCtrl.update)
-        .when('DELETE', '/tasks/:id', request, tasksCtrl.remove)
-        .when('GET', '/tasks/:id', request, tasksCtrl.get)
-        .when('GET', '/tasks', request, tasksCtrl.getAll)
-        .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
-        .when('GET', '/', request, tasksCtrl.forbidden)
-        .end()
-      log('------------------------------------------------------------------------------------------------')
     }
   }
 })()
