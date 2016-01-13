@@ -23,7 +23,7 @@ module.exports = (function () {
 
     // Inicialização
     function initialize (callback) {
-      dbInit(env, config/*, {host: '192.168.99.100', schema: 'todonodehmg'}*/, function (err, db) {
+      dbInit(env, config, function (err, db) {
         if (!err) {
           // db = dbase
           tasksCtrl = tasksCtrl.build(log, db)

@@ -11,15 +11,15 @@ module.exports = {
   env: {
     // db: indica qual o DB do ambiente
     dsv: {
-      db: 'mem'
+      db: 'memdb'
     },
 
     hmg: {
-      db: 'mongo'
+      db: 'mongodb'
     },
 
     prd: {
-      db: 'mongo'
+      db: 'mongodb'
     },
   },
 
@@ -27,7 +27,7 @@ module.exports = {
   // Se houverem configurações diferentes para ambientes de desenvolvimento, 
   // testes e produção definir com as keys db, hmg e prd
   db: {
-    mongo: {
+    mongodb: {
       dsv: {
         host: '192.168.99.100',
         port: '27017',
