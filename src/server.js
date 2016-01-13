@@ -3,41 +3,56 @@ module.exports = (function () {
     build: buildServer
   }
 
-  function buildServer (config, ctrl) {
-    return new Server(config, ctrl)
+  function buildServer (config) {
+    return new Server(config)
   }
 
-  function Server (config, ctrl) {
+  function Server (config) {
     // Requires
     var router = require('./router').build()
     var http = require('http')
     var log = require('./log').log
 
-    var tasksCtrl = ctrl
+    var tasksCtrl
 
     var hostname = config.hostname,
       port = config.port,
-      srv = this,
-      server = http.createServer()
+      server = http.createServer(handler)
+
+    var srv = this
 
     // Api
     srv.initialize = initialize
-    srv.server = server
+    srv.getHttp = getHttp
     srv.stop = stop
 
     // Inicialização
     function initialize (ctrl, callback) {
-      server.listen(port, hostname, function () {
-        // PASSAR PARA FUNÇAO DE LOG 
-        // console.log('Server running at http://' + hostname + ':' + port)
+      tasksCtrl = ctrl
+
+      server.on('error', function (e) {
+        log('Erro!', e)
       })
 
-      server.on('request', handler)
+      server.on('close', function () {
+        log(' Stopping server')
+      })
+      /*   
+         process.on('SIGINT', function () {
+              server.close()
+            })*/
 
-      callback(null, srv)
+      server.listen(port, hostname, function () {
+        log('Server running at http://' + hostname + ':' + port)
+        callback(null, srv)
+      })
     }
 
     // Funções
+    function getHttp () {
+      return server
+    }
+
     function stop () {
       server.close()
     }
@@ -56,9 +71,7 @@ module.exports = (function () {
         .when('OPTIONS', '/tasks/:id', request, tasksCtrl.options)
         .when('GET', '/', request, tasksCtrl.forbidden)
         .end()
-
       log('------------------------------------------------------------------------------------------------')
     }
-
   }
 })()
