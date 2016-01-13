@@ -2,14 +2,6 @@ describe('App main module', function () {
   var app = require('../app.js')
   var expect = require('chai').expect
 
-  before(function (done) {
-    app.build(function (err, ap) {
-      //if (err) trow err
-      app = ap
-      done()
-    })
-  })
-
   after(function (done) {
     app.stop()
     done()
