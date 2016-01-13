@@ -5,7 +5,7 @@ var config = require('./app.conf')
 var server = require('./src/server').build(config.http)
 
 // Pode ser DEV, HMG ou PRD. Quero DEV in Memory, HMG e PRD com Mongo
-var env = 'dsv'
+var env
 
 // Vou usar o escopo geral do processo
 var app = this
@@ -20,11 +20,6 @@ function stop () {
   server.stop()
 }
 
-/*process.argv.forEach(function (val, index, array) {
-  if (val.hasOwnProperty('env')) {
-    env = val.env
-  }
-})*/
 
 env = process.argv[2] || 'dsv'
 
