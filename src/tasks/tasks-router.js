@@ -16,7 +16,6 @@ module.exports = (function TaskRouterBuilder () {
     app.route = route
 
     function route (request, response) {
-      // function handler (request, response) {
       log('------------------------------------------------------------------------------------------------')
       log('Request: METHOD:', request.method, ' - URL:', request.url)
       tasksCtrl.setTransaction(request, response)
