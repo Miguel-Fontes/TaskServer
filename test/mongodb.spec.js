@@ -1,8 +1,8 @@
 describe('MongoDB', function () {
+  var config = require('./../app.conf.js')
   var expect = require('chai').expect
-
   var mongoDb = require('../src/db/mongodb.js')
-    .build({host: '192.168.99.100', schema: 'todonodehmg'})
+    .build(config.db.mongodb.hmg)
 
   var db
 

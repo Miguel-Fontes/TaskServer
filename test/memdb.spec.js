@@ -1,5 +1,7 @@
 describe('MeM Database', function () {
-  var db = require('../src/db/memdb.js').build({})
+  var config = require('./../app.conf.js')
+  var db = require('../src/db/memdb.js')
+    .build(config.db.memdb.hmg)
   var expect = require('chai').expect
 
   function Task (id, description, done) {
