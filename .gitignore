@@ -8,4 +8,4 @@ tmp
 *.sass-cache
 node_modules/
 typings/*
-todo.*
+*.db
