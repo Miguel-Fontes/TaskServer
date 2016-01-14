@@ -15,7 +15,7 @@ module.exports = {
     },
 
     hmg: {
-      db: 'mongodb'
+      db: 'memdb'
     },
 
     prd: {
