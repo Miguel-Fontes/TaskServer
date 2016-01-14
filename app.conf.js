@@ -53,8 +53,18 @@ module.exports = {
       dbClassName: 'MeMDatabase'
     },
 
-    fsdb: {
-      dbClassName: 'FSDatabase'
+    staticdb: {
+      dbClassName: 'StaticDB',
+      
+      dsv: {
+        file: '.\\db\\todo-dsv.db'
+      },
+      hmg: {
+        file: '.\\db\\todo-hmg.db'
+      },
+      prd: {
+        file: '.\\db\\todo.db'
+      }
     }
 
   }
