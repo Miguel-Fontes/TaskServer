@@ -1,7 +1,7 @@
 describe('Tasks Routes', function () {
   var expect = require('chai').expect
-  var tasksCtrl = require('./mocks/controller.mock')
-  var tasksRoutes = require('../src/tasks/tasks-router').build(tasksCtrl)
+  var tasksCtrl = require('./../mocks/controller.mock')
+  var tasksRoutes = require('./../../src/tasks/tasks-router').build(tasksCtrl)
  
   function request (method, path) {
     return {

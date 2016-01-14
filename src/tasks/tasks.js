@@ -13,8 +13,8 @@ module.exports = (function tasksFactory () {
       tasks = this
 
     tasks.initialize = initialize
-    tasks.routes = getRoutes // Executo para passar o resultado da função diretamente
-
+    tasks.routes = getRoutes 
+    
     function getRoutes () {
       return tasksRouter.route
     }

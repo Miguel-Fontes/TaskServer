@@ -7,7 +7,7 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "mocha .\\test\\**\\*.js --reporter progress"
+    "test": "mocha .\\test\\**\\*.js --reporter nyan"
   },
   "author": "Miguel Fontes",
   "license": "ISC",
