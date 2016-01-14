@@ -11,6 +11,13 @@ var MEMDATABASE = (function () {
     var db = this,
       data = []
 
+    db.initialize = initialize
+    db.save = save
+    db.remove = remove
+    db.get = get
+    db.query = query
+    db.update = update
+
     Array.prototype.filterById = function (id) {
       var newArray
       newArray = this.filter(function (obj) { if (obj.id != id) return obj })
@@ -22,13 +29,6 @@ var MEMDATABASE = (function () {
       newArray = this.filter(function (obj) { if (obj.id == id) return obj })
       return newArray
     }
-
-    db.initialize = initialize
-    db.save = save
-    db.remove = remove
-    db.get = get
-    db.query = query
-    db.update = update
 
     function initialize (callback) {
       callback(null, db)
@@ -42,7 +42,7 @@ var MEMDATABASE = (function () {
     }
 
     function get (id, callback) {
-      // Pode ser que não achemos ninguém. E aí?
+      // TODO: Pode ser que não achemos ninguém. E aí?
       var obj = data.getById(id)
       callback(obj)
     }
