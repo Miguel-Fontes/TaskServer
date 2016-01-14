@@ -9,9 +9,9 @@ module.exports = (function staticDbFactory () {
 
   function StaticDB (config) {
     var fs = require('fs')
-    var memDb = require('./memdb').build({ })
+    var memDb = require('./memdb')
     var db = this,
-      dbfile = config.file      
+      dbfile = config.file
 
     db.initialize = initialize
     db.save = save
@@ -36,9 +36,6 @@ module.exports = (function staticDbFactory () {
     function initialize (callback) {
       // Vou usar um database baseado em memória internamente e gerenciar
       // apenas a gravação em arquivo aqui.  
-      require('./memdb').build({ }).initialize(function (err, mdb) {
-        memDb = mdb
-      })
 
       fs.readFile(dbfile, {flag: 'a+'}, function (err, dbData) {
         if (err) {
@@ -46,6 +43,13 @@ module.exports = (function staticDbFactory () {
         } else {
           try {
             data = (dbData.toString() != '') ? (JSON.parse(dbData.toString())) : []
+
+            memDb
+              .build({data: data})
+              .initialize(function (err, mdb) {
+                memDb = mdb
+              })
+
           } catch (e) {
             err = new Error('Erro no parse! -', dbData.toString(), '-', e)
             callback(err, [])

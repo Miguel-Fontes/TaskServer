@@ -31,6 +31,12 @@ var MEMDATABASE = (function () {
     }
 
     function initialize (callback) {
+      if (typeof config != 'undefined') {
+          data = (typeof config.data != 'undefined' ? config.data : [])
+      } else {
+          // handler error
+          // Não faço nada porque o MEM DB pode ser inicializado sem dados
+      }
       callback(null, db)
     }
 
