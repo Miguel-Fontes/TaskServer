@@ -1,5 +1,3 @@
-var log = require('./log').log
-
 // Prototypes ----------------------------------------------
 String.prototype.contains = function (char) {
   var value = this.toString()
@@ -7,7 +5,7 @@ String.prototype.contains = function (char) {
 }
 // ---------------------------------------------------------
 
-var ROUTER = (function routerFactory (log) {
+var ROUTER = (function routerFactory () {
   // API Factory
   return {
     build: build
@@ -19,17 +17,32 @@ var ROUTER = (function routerFactory (log) {
 
   // Class Router
   function Router () {
+    var log = require('./log').log
     var matched = false,
       srv = this; // Bind do this do serviço à variável. Good Practice.
 
     // API
     srv.when = when
     srv.end = end
+    srv.all = all
     // Funcionalidades
+
+    function all (pattern, request, response, callback) {
+      if (!matched) {
+        if (validatePattern(pattern, request, true)) {
+          callback(request, response)
+          // Marco como true para que não sejam avaliados mais padroes
+          matched = true
+        }
+      }
+      // Chainning Cleverness
+      return srv
+    }
+
     function when (method, pattern, request, callback) {
       // Primeiro verifica o método que é o mais rápido, na boa
       if (validMethod() && !matched) {
-        if (validatePattern(pattern, request)) {
+        if (validatePattern(pattern, request, false)) {
           callback()
           // Marco como true para que não sejam avaliados mais padroes
           matched = true
@@ -37,6 +50,7 @@ var ROUTER = (function routerFactory (log) {
       }
 
       function validMethod () {
+        // Implementar o método ALL aqui
         return method == request.method ? true : false
       }
 
@@ -49,7 +63,7 @@ var ROUTER = (function routerFactory (log) {
       matched = false
     }
 
-    function validatePattern (urlPattern, request) {
+    function validatePattern (urlPattern, request, fast) {
       var urlSplit = '',
         requestUrlSplit = '',
         parsedUrl = request.url,
@@ -65,13 +79,17 @@ var ROUTER = (function routerFactory (log) {
       urlSplit = urlPattern.split('/').filter(isBlank)
       requestUrlSplit = requestUrl.split('/').filter(isBlank)
 
+      if (fast && urlSplit[0] == requestUrlSplit[0]) {
+        return true
+      }
+
       // Validação do tamanho dos Arrays. Se não for igual significa que a URL não se encaixa no Pattern.
       // Vou retornar ''. Isto fará com que a URL nunca se encaixe no Pattern.
-      if (urlSplit.length != requestUrlSplit.length) {
+      if (urlSplit.length != requestUrlSplit.length && !fast) {
         log('O tamanho dos arrays é diferente. Não é deste pattern (', urlPattern , '): ', urlSplit.length, '!=', requestUrlSplit.length)
         return false
       }
-      
+
       // Crio um objeto javascript com os parâmetros e a posição do bloco para efetuar o
       // Matching de valores posteriormente.
       urlSplit.forEach(buildParams)
@@ -100,6 +118,6 @@ var ROUTER = (function routerFactory (log) {
       }
     }
   }
-})(log)
+})()
 
 module.exports = ROUTER

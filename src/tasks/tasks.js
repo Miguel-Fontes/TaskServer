@@ -8,19 +8,24 @@ module.exports = (function tasksFactory () {
   }
 
   function Tasks (db) {
-    var tasksCtrl = require('./taskController').build(db)
-    var tasksRouter = require('./tasks-router').build(tasksCtrl)
-
-    var tasks = this
+    var tasksCtrl,
+      tasksRouter,
+      tasks = this
 
     tasks.initialize = initialize
-    tasks.routes = getRoutes
+    tasks.routes = getRoutes // Executo para passar o resultado da função diretamente
 
     function getRoutes () {
       return tasksRouter.route
     }
 
     function initialize (callback) {
+      tasksCtrl = require('./taskController')
+        .build(db)
+
+      tasksRouter = require('./tasks-router')
+        .build(tasksCtrl)
+
       callback(null, tasks)
     }
 

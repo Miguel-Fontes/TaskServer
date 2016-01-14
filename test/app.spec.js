@@ -1,7 +1,8 @@
 describe('App main module', function () {
-  var app = require('../app.js')
   var expect = require('chai').expect
   var request = require('supertest')
+
+  var app = require('../app.js')
 
   // Helper task model
   function Task (id, description, done) {
@@ -17,42 +18,32 @@ describe('App main module', function () {
 
   describe('initialization process', function () {
     it('should define app', function (done) {
-      expect(app).to.be.defined
+      expect(app).not.to.be.undefined
       done()
     })
 
     it('should define dbconnections', function (done) {
-      expect(app.dbconnections).to.be.defined
-      done()
-    })
-
-    it('should define controllers', function (done) {
-      expect(app.controllers).to.be.defined
+      expect(app.dbconnections).not.to.be.undefined
       done()
     })
 
     it('should define http', function (done) {
-      expect(app.http).to.be.defined
+      expect(app.http).not.to.be.undefined
       done()
     })
 
     it('should define stop ', function (done) {
-      expect(app.stop).to.be.defined
+      expect(app.stop).not.to.be.undefined
       done()
     })
 
     it('should define env', function (done) {
-      expect(app.env).to.be.defined
+      expect(app.env).not.to.be.undefined
       done()
     })
 
     it('should have at least one connection at app.dbconnections', function (done) {
       expect(app.dbconnections).to.have.length.of.at.least(1)
-      done()
-    })
-
-    it('should have at least one controller at app.controllers ', function (done) {
-      expect(app.controllers).to.have.length.of.at.least(1)
       done()
     })
 

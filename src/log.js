@@ -10,7 +10,7 @@ var LOG = (function logModule () {
     for (var i = 0, j = log.arguments.length; i < j; i++) {
       logMessage += (log.arguments[i] == undefined ? 'undefined' : log.arguments[i].toString()) + ' '
     }
-    //console.log(logMessage)
+    console.log(logMessage)
   }
 })()
 
