@@ -64,9 +64,9 @@ var ROUTER = (function routerFactory () {
     }
 
     function validatePattern (urlPattern, request, fast) {
-      var urlSplit = '',
+      var patternSplit = '',
         requestUrlSplit = '',
-        parsedUrl = request.url,
+        parsedPatternUrl = urlPattern,
         requestUrl = request.url
 
       request.params = {}
@@ -76,28 +76,27 @@ var ROUTER = (function routerFactory () {
       log('Validação do Pattern', urlPattern, 'com a URL do request', requestUrl)
 
       // TODO: validar se url é string. Caso negativo, retornar erro.
-      urlSplit = urlPattern.split('/').filter(isBlank)
+      patternSplit = urlPattern.split('/').filter(isBlank)
       requestUrlSplit = requestUrl.split('/').filter(isBlank)
 
-      if (fast && urlSplit[0] == requestUrlSplit[0]) {
+      if (fast && patternSplit[0] == requestUrlSplit[0]) {
         return true
       }
 
       // Validação do tamanho dos Arrays. Se não for igual significa que a URL não se encaixa no Pattern.
       // Vou retornar ''. Isto fará com que a URL nunca se encaixe no Pattern.
-      if (urlSplit.length != requestUrlSplit.length && !fast) {
-        log('O tamanho dos arrays é diferente. Não é deste pattern (', urlPattern , '): ', urlSplit.length, '!=', requestUrlSplit.length)
+      if (patternSplit.length != requestUrlSplit.length && !fast) {
+        //log('O tamanho dos arrays é diferente. Não é deste pattern (', urlPattern , '): ', urlSplit.length, '!=', requestUrlSplit.length)
         return false
       }
 
       // Crio um objeto javascript com os parâmetros e a posição do bloco para efetuar o
       // Matching de valores posteriormente.
-      urlSplit.forEach(buildParams)
-
-      log('URL para Matching', parsedUrl)
+      patternSplit.forEach(buildParams)
+      
+      log('URL para Matching', parsedPatternUrl)
       log('request url', requestUrl)
-
-      return parsedUrl == requestUrl
+      return parsedPatternUrl == requestUrl
 
       function isBlank (value, index, array) {
         if (value != '') {
@@ -107,7 +106,7 @@ var ROUTER = (function routerFactory () {
 
       function buildParams (value, index, array) {
         if (value.contains(':')) {
-          parsedUrl = parsedUrl.replace(value, requestUrlSplit[index])
+          parsedPatternUrl = parsedPatternUrl.replace(value, requestUrlSplit[index])
           request.params[value.replace(':', '')] = requestUrlSplit[index]
         }
       }
