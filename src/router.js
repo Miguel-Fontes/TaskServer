@@ -35,12 +35,10 @@ var ROUTER = (function routerFactory () {
           matched = true
         }
       }
-      // Chainning Cleverness
       return srv
     }
 
     function when (method, pattern, request, callback) {
-      // Primeiro verifica o método que é o mais rápido, na boa
       if (validMethod() && !matched) {
         if (validatePattern(pattern, request, false)) {
           callback()
@@ -50,11 +48,9 @@ var ROUTER = (function routerFactory () {
       }
 
       function validMethod () {
-        // Implementar o método ALL aqui
         return method == request.method ? true : false
       }
 
-      // Chainning Cleverness
       return srv
     }
 
@@ -70,8 +66,6 @@ var ROUTER = (function routerFactory () {
         requestUrl = request.url
 
       request.params = {}
-
-      validateArguments()
 
       log('Validação do Pattern', urlPattern, 'com a URL do request', requestUrl)
 
@@ -93,7 +87,7 @@ var ROUTER = (function routerFactory () {
       // Crio um objeto javascript com os parâmetros e a posição do bloco para efetuar o
       // Matching de valores posteriormente.
       patternSplit.forEach(buildParams)
-      
+
       log('URL para Matching', parsedPatternUrl)
       log('request url', requestUrl)
       return parsedPatternUrl == requestUrl
@@ -111,10 +105,6 @@ var ROUTER = (function routerFactory () {
         }
       }
 
-      function validateArguments () {
-        // if (typeof (urlSplit) != string) { return false }
-        // if (typeof (urlSplit) != string) { return false }
-      }
     }
   }
 })()

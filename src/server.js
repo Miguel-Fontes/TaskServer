@@ -33,11 +33,6 @@ module.exports = (function () {
       server.on('close', function () {
         log(' Stopping server')
       })
-      // TODO: Verificar se é útil
-      /*   
-         process.on('SIGINT', function () {
-              server.close()
-            })*/
 
       server.listen(port, hostname, function () {
         log('Server running at http://' + hostname + ':' + port)
